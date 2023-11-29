@@ -1,79 +1,62 @@
 #pragma once
 
-#include "DList.h"
-#include "DListNode.h"
-
 template <class T>
-class DListIterator
+class DListNode
 {
 public:
-	DListNode<T>* currentNode;
-	DList<T>* list;
+	T data;
+	DListNode<T>* next;
+	DListNode<T>* previous;
 
-	DListIterator(DList<T>* l = nullptr, DListNode<T>* node = nullptr);
-	void start();
-	void end();
-	void advance();
-	void previous();
-	T item();
-	bool isValid();
-	bool isEnd();
-	bool isStart();
+	DListNode(T item);
+	DListNode(DListNode<T>& item);
+	void insertBefore(T item);
+	void insertAfter(T item);
+
+	~DListNode()
+	{
+		//next = nullptr;
+		//previous = nullptr;
+	}
 };
 
+
 template <class T>
-DListIterator<T>::DListIterator(DList<T>* l, DListNode<T>* n)
+DListNode<T>::DListNode(DListNode<T>& node)
 {
-	list = l;
-	currentNode = n;
+	this->data = new DListNode(node->data);
+}
+template <class T>
+DListNode<T>::DListNode(T item)
+{
+	data = item;
+	next = previous = nullptr;
 }
 
 template <class T>
-void DListIterator<T>::start()
+void DListNode<T>::insertAfter(T item)
 {
-	currentNode = list->head;
+	DListNode<T>* temp = new DListNode(item);
+	temp->previous = this;
+	temp->next = this->next;
+	if (this->next != nullptr)
+	{
+		this->next->previous = temp;
+	}
+	this->next = temp;
 }
 
-template <class T>
-void DListIterator<T>::end()
-{
-	currentNode = list->tail;
-}
-template <class T>
-void DListIterator<T>::advance()
-{
-	if (currentNode == nullptr)
-		return;
-	currentNode = currentNode->next;
-}
+
 
 template <class T>
-void DListIterator<T>::previous()
+void DListNode<T>::insertBefore(T item)
 {
-	if (currentNode == nullptr)
-		return;
-	currentNode = currentNode->previous;
-}
-template <class T>
-T DListIterator<T>::item()
-{
-	return currentNode->data;
-}
-
-template <class T>
-bool DListIterator<T>::isValid()
-{
-	return currentNode != nullptr;
-}
-
-template <class T>
-bool DListIterator<T>::isEnd()
-{
-	return currentNode == list->tail;
-}
-
-template <class T>
-bool DListIterator<T>::isStart()
-{
-	return currentNode == list->head;
+	DListNode<T>* temp = new DListNode(item);
+	temp->next = this;
+	temp->previous = this->previous;
+	if (this->previous != nullptr)
+	{
+		this->previous->next = temp;
+	}
+	this->previous = temp;
 }
