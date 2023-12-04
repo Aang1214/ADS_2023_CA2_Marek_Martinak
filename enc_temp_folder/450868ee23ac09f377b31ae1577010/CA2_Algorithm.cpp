@@ -47,7 +47,7 @@ int main()
 {
     // XML string representing the file tree
     string xmlData = R"(
-    <dir>
+    
         <name>ADS_Single_LinkedList_Exercises</name>
         <dir>
             <name>.git</name>
