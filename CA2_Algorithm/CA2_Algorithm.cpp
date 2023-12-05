@@ -1,8 +1,8 @@
-// CA2_Algorithm.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
+
 #include <iostream>
+#include <fstream>
 #include <string>
-#include "DList.h" // Include DList and related classes
+#include "DList.h" 
 #include "Tree.h" 
 #include "TreeIterator.h" 
 #include "MyStack.h"
@@ -10,6 +10,8 @@
 #include "DListNode.h"
 
 using namespace std;
+
+
 
 bool validateXML(const string& xml) {
     MyStack<string> *file = new MyStack<string>;
@@ -28,7 +30,10 @@ bool validateXML(const string& xml) {
 					return false;
 				}
 				file->pop();
+
+
 			}
+            
             else {
 				string tag = "";
 				i++;
@@ -37,15 +42,21 @@ bool validateXML(const string& xml) {
 					i++;
 				}
 				file->push(tag);
+
+
 			}
 		}
 		i++;
     }
 }
 
+int countFiles(Tree<string>* root) {
+	
+}
+
 int main()
 {
-    // XML string representing the file tree
+    
     string xmlData = R"(
     <dir>
         <name>ADS_Single_LinkedList_Exercises</name>
