@@ -1,6 +1,8 @@
 
 #include <iostream>
+#include <istream>
 #include <fstream>
+#include <sstream>
 #include <string>
 #include "DList.h" 
 #include "Tree.h" 
@@ -14,24 +16,28 @@ using namespace std;
 
 
 bool validateXML(const string& xml) {
+    Tree<string> *tree = new Tree<string>("text");
+    TreeIterator<string> iter(tree);
     MyStack<string> *file = new MyStack<string>;
-
+    string nextTag = "dir";
+    string prevTag = "";
     int i = 0;
-    while ( i < xml.length()) {
-        if (xml[i] == '<') {
-            if (xml[i + 1] == '/') {
-				string tag = "";
+    while ( i < xml.length()) { // it goes through the whole string
+        if (xml[i] == '<') { // if it finds a tag
+
+            if (xml[i + 1] == '/') { // if it is a closing tag
+				string tag = ""; 
 				i += 2;
-                while (xml[i] != '>') {
+
+                while (xml[i] != '>') { // it goes through the "tag"
 					tag += xml[i];
 					i++;
 				}
-                if (tag != file->top()) {
+
+                if (tag != file->top()) { // if the closing tag is not the same as the last opening tag
 					return false;
 				}
-				file->pop();
-
-
+				file->pop(); // if it is the same, it pops the last opening tag
 			}
             
             else {
@@ -41,18 +47,82 @@ bool validateXML(const string& xml) {
 					tag += xml[i];
 					i++;
 				}
-				file->push(tag);
+                
+                if (tag == nextTag || nextTag == "dir/file") {
+                    if (tag == "dir" || tag == "file")
+                    {
+                        nextTag = "name";
+                    }
+                    else if (prevTag == "dir")
+                    {
+                        nextTag = "dir/file";
 
+                    }
+
+                    else if(prevTag == "file") 
+                    {
+                            nextTag = "length";
+                    }
+                    else if (prevTag == "name") {
+                        nextTag = "type";
+                    }
+                    
+                    else if (prevTag == "length") {
+                        nextTag = "dir/file";
+                    }
+                
+                }
+                else {
+					return false;
+                }
+                /*if (tag == "dir" || tag == "file" && prevTag != "dir") {
+                   		nextTag = "name";
+                }
+
+                else if (tag == nextTag) {
+                    if (prevTag == "file") {
+                        nextTag = "length";
+                    }
+                    else if (prevTag == "name") {
+                        nextTag = "type";
+                    }
+                }
+                
+                else {
+                    return false;
+                }*/
+                prevTag = tag;
+
+				file->push(tag); // if it is an opening tag, it pushes it to the stack
 
 			}
 		}
 		i++;
     }
+    iter.root();
 }
 
-int countFiles(Tree<string>* root) {
-	
+
+string xmlToString(ifstream* fileStream) {
+	string fileInString;
+	string line;
+    if (fileStream) {
+        while (getline(*fileStream, line))
+        {
+			fileInString += line;
+            cout << line << endl;
+		}
+	}
+    else {
+		cout << "File not found";
+	}
+	fileStream->close();
+	return fileInString;
 }
+
+
+
+
 
 int main()
 {
@@ -108,7 +178,13 @@ int main()
     </dir>
     )";
 
-    if (validateXML(xmlData))
+   
+
+    ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
+    string xml = xmlToString(fileStream);
+    
+
+    if (validateXML(xml))
 		cout << "XML is valid" << endl;
 	else
 		cout << "XML is invalid" << endl;
