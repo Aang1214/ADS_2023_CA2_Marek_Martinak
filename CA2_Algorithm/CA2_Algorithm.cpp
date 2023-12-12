@@ -10,14 +10,12 @@
 #include "MyStack.h"
 #include "DListIterator.h"
 #include "DListNode.h"
-
+#include "MyCode.h"
 using namespace std;
 
 
 
-bool validateXML(const string& xml) {
-    Tree<string> *tree = new Tree<string>("text");
-    TreeIterator<string> iter(tree);
+bool validateXML(string& xml) {
     MyStack<string> *file = new MyStack<string>;
     string nextTag = "dir";
     string prevTag = "";
@@ -52,6 +50,7 @@ bool validateXML(const string& xml) {
                     if (tag == "dir" || tag == "file")
                     {
                         nextTag = "name";
+
                     }
                     else if (prevTag == "dir")
                     {
@@ -91,15 +90,15 @@ bool validateXML(const string& xml) {
                 else {
                     return false;
                 }*/
-                prevTag = tag;
+            prevTag = tag;
 
-				file->push(tag); // if it is an opening tag, it pushes it to the stack
+		    file->push(tag); // if it is an opening tag, it pushes it to the stack
 
 			}
 		}
 		i++;
     }
-    iter.root();
+    return true;
 }
 
 
@@ -121,12 +120,131 @@ string xmlToString(ifstream* fileStream) {
 }
 
 
+void createTree(Tree<DataMemory*>& tree, string fileName) {
+    ifstream* fileStream = new ifstream(fileName);
+    string xml = xmlToString(fileStream);
+    TreeIterator<DataMemory*> iter(&tree);
+    DataMemory* D = new DataMemory(dir);
+    string x = "";
+    string y = "";
+    int p;
+    int i = 0;
+    int t = 0;
+    int filecheck = 0;
 
+    if (validateXML(xml))
+    {    
+        while (i < xml.length())
+        { // it goes through the whole string
+            x += xml[i];
+            
+        
+            if (x == "<name>")
+                { 
+                t = i + 1;
+                while (xml[t] != '<')
+                {
+                    y += xml[t];
+                    t++;
+                    
+                }
+                D->name = y;
+                i = t; 
+                x = "";
+				}
+            else if (x == "<length>") {
+                t = i + 1;
+                while (xml[t] != '<')
+                {
+                    y += xml[t];
+                    t++;
+                }
+                D->length = y;
+                i = t;
+                x = "";
+            }
+            else if (x == "<type>") {
+                t = i + 1;
+                while (xml[t] != '<')
+                {
+					y += xml[t];
+					t++;
+				}
+				D->type = y;
+                i = t;
+                x = "";
+            }
+            else if (x == "<dir>") {
+                D = new DataMemory(dir);
+                //iter.item() = D; if first(root)
+                iter.appendChild(D); //else
+                iter.childEnd();
+                iter.down();
+                x = "";
+			}
+
+
+            else if (x == "</dir>") {
+                //if first dont do this & firts = false
+                iter.up();
+                x = "";
+            }
+            else if (x == "<file>") {
+                D = new DataMemory(file);
+                iter.appendChild(D);
+                iter.childEnd();
+                x = "";
+			}
+            i++;
+						
+         }
+
+        iter.root();
+
+               
+     }
+    else 
+    {
+		cout << "XML is invalid" << endl;
+	}
+}
+
+
+/*int countFiles(Tree<string>& tree) {
+	TreeIterator<string> iter(&tree);
+	int count = 0;
+    while (iter.childValid()) {
+        if (iter.item() == "file") {
+			count++;
+		}
+		iter.advance();
+	}
+	return count;
+}*/
+
+/*int BreathFirstSearch(Tree<string>& tree) {
+    return 0;
+}*/
+
+void displayTree(TreeIterator<DataMemory*> iter, string indent)
+{
+    cout << "There should be a line here " << endl;
+    cout << indent << iter.item()->name << endl;
+    while (iter.childValid()) {
+        TreeIterator<DataMemory*> child(iter);
+        child.down();
+        displayTree(child, indent + "\t");
+        iter.childForth();
+    }
+}
 
 
 int main()
 {
     
+    
+
+
     string xmlData = R"(
     <dir>
         <name>ADS_Single_LinkedList_Exercises</name>
@@ -178,17 +296,17 @@ int main()
     </dir>
     )";
 
-   
-
+    
+  
+    string fileName = "../x64/Debug/File.xml";
+    Tree<DataMemory*> tree(nullptr);
     ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
     string xml = xmlToString(fileStream);
-    
+    createTree(tree, fileName);
+    TreeIterator<DataMemory*> iter(&tree);
+    displayTree(iter, "");
 
-    if (validateXML(xml))
-		cout << "XML is valid" << endl;
-	else
-		cout << "XML is invalid" << endl;
-    
+    return 0;
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

@@ -133,6 +133,7 @@
     <ClInclude Include="DList.h" />
     <ClInclude Include="DListIterator.h" />
     <ClInclude Include="DListNode.h" />
+    <ClInclude Include="MyCode.h" />
     <ClInclude Include="MyStack.h" />
     <ClInclude Include="Tree.h" />
     <ClInclude Include="TreeIterator.h" />
