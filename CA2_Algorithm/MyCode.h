@@ -16,6 +16,7 @@ enum TypeEnum
 
 };
 
+
 struct DataMemory {
     string name;
     string length;
@@ -27,5 +28,18 @@ struct DataMemory {
 		length = "";
 		type = "";
 		typeEnum = tag;
+	}
+
+    DataMemory(string name, string length, string type, TypeEnum tag) {
+		this->name = name;
+		this->length = length;
+		this->type = type;
+		this->typeEnum = tag;
+	}
+    DataMemory() {
+		name = "";
+		length = "";
+		type = "";
+		typeEnum = dir;
 	}
 };

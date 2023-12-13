@@ -132,6 +132,8 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
     int i = 0;
     int t = 0;
     int filecheck = 0;
+    bool first = true;
+
 
     if (validateXML(xml))
     {    
@@ -182,14 +184,24 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
                     }
                     else if (tag == "dir") {
                         D = new DataMemory(dir);
-
+                        if (first)
+                        {
+                            tree = Tree<DataMemory*>(D);
+                            first = false;
+                        }
                         //iter.item() = D; if first(root)
-                        iter.appendChild(D); //else
-                        iter.childEnd();
-                        iter.down();
+                        else
+                        {
+                            iter.appendChild(D);
+                            iter.childEnd();
+                            iter.down();
+                        }
+                         //else
+                        
                         y = "";
                     }
                     else if (tag == "/dir") {
+
                         //if first dont do this & firts = false
                         iter.up();
                         y = "";
@@ -217,17 +229,7 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
 }
 
 
-/*int countFiles(Tree<string>& tree) {
-	TreeIterator<string> iter(&tree);
-	int count = 0;
-    while (iter.childValid()) {
-        if (iter.item() == "file") {
-			count++;
-		}
-		iter.advance();
-	}
-	return count;
-}*/
+
 
 /*int BreathFirstSearch(Tree<string>& tree) {
     return 0;
@@ -235,24 +237,131 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
 
 void displayTree(TreeIterator<DataMemory*> iter, string indent)
 {
-    cout << "There should be a line here " << endl;
-    cout << indent << iter.item()->name << endl;
-    while (iter.childValid()) {
-        TreeIterator<DataMemory*> child(iter);
-        child.down();
-        displayTree(child, indent + "\t");
-        iter.childForth();
+   // if (iter.node != nullptr && iter.node->data != nullptr && iter.node->data->name != "")
+    //{
+        cout << indent << iter.node->data->name;
+    //}
+    if (iter.childValid())
+    {
+        cout << "(" << endl;
+
+        while (iter.childValid())
+        {
+            TreeIterator<DataMemory*> iter2(iter.childIter.currentNode->data);
+            displayTree(iter2, "\t" + indent);
+            iter.childForth();
+        }
+        cout << indent << ")";
     }
+    cout << endl;
+}
+
+void E_displayTreeWithSize(TreeIterator<DataMemory*> iter, string indent)
+{
+    cout << indent << iter.node->data->name;
+    if (iter.childValid())
+    {
+        cout << "(" << endl;
+
+        while (iter.childValid())
+        {
+            TreeIterator<DataMemory*> iter2(iter.childIter.currentNode->data);
+            cout << indent << iter.childIter.currentNode->data->data->name;
+            if (iter.node->data->type == "file")
+            {
+               
+                cout << " " << iter.childIter.currentNode->data->data->length;
+			}
+            cout << endl;
+            
+            iter.childForth();
+        }
+        cout << indent << ")";
+    }
+    cout << endl;
+}
+
+int A_countItems(Tree<DataMemory*>& tree) {
+    
+    return tree.count() - 1;
 }
 
 
+int B_MemoryBFA(Tree<DataMemory*>& tree) {
+	queue<Tree<DataMemory*>*> queueIt;
+    int count = 0;
+    queueIt.push(&tree);
+    while (!queueIt.empty()) {
+		DListIterator<Tree<DataMemory*>*> iter = queueIt.front()->children->getIterator();
+        while (iter.isValid()) {
+			queueIt.push(iter.item());
+			iter.advance();
+		}
+        count = stoi(queueIt.front()->data->length);
+		queueIt.pop();
 
+	}
+    return count;
+}
+
+void C_PruneTheTree(Tree<DataMemory*>& tree) {
+	TreeIterator<DataMemory*> iter(&tree);
+    while (iter.childValid()) {
+        if (iter.node->data->type == "file") {
+			
+		}
+		iter.childForth();
+	}
+}
+void D_FindGivenFolder(Tree<DataMemory*>& tree, string folderName) {
+	TreeIterator<DataMemory*> iter(&tree);
+    while (iter.childValid()) {
+        if (iter.node->data->name == folderName) {
+			cout << "Folder found" << endl;
+			return;
+		}
+		iter.childForth();
+	}
+	
+}
+void printBFS(Tree<DataMemory*>* tree)
+{
+    queue<Tree<DataMemory*>*> queue;
+    queue.push(tree);
+    while (!queue.empty())
+    {
+        DListIterator<Tree<DataMemory*>*> iter(queue.front()->children->getIterator());
+        while (iter.isValid())
+        {
+            queue.push(iter.item());
+            iter.advance();
+        }
+        cout << queue.front()->data->name << "\t ";
+        queue.pop();
+
+    }
+
+
+}
+
+Tree<DataMemory*> MyTree()
+{
+    DataMemory* test = new DataMemory("ADS_Single_LinkedList_Exercises","", "", dir);
+    Tree<DataMemory*>* root = new Tree<DataMemory*>(test);
+    TreeIterator<DataMemory*> iter(root);
+    iter.appendChild(new DataMemory(".git", "", "", dir));
+    iter.down();
+    iter.appendChild(new DataMemory("config", "353 b", "config",file));
+    iter.appendChild(new DataMemory("config", "73 b", "config", file));
+    iter.appendChild(new DataMemory("config", "23 b", "config", file));
+    iter.root();
+    printBFS(root);
+    cout << root->count();
+    return *root;
+
+}
 int main()
 {
-    
-    
-
-
     string xmlData = R"(
     <dir>
         <name>ADS_Single_LinkedList_Exercises</name>
@@ -305,7 +414,7 @@ int main()
     )";
 
     
-  
+    string emptyString = "";
     string fileName = "../x64/Debug/File.xml";
     Tree<DataMemory*> tree(nullptr);
     ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
@@ -313,7 +422,21 @@ int main()
     createTree(tree, fileName);
     TreeIterator<DataMemory*> iter = TreeIterator<DataMemory*>(&tree);
     displayTree(iter, "");
+    cout << endl;
+    cout << "Number of files: " << A_countItems(tree) << endl;
+    cout << endl;
+    D_FindGivenFolder(tree, "Debug");
+    cout << endl;
+    MyTree();
 
+    Tree<DataMemory*> treee = MyTree();
+    cout << endl;
+    cout << endl;
+    E_displayTreeWithSize(iter, "");
+    cout << endl;
+    cout << "Number of files: " << A_countItems(treee) << endl;
+    cout << endl;
+    //cout << "Memory used: " << B_MemoryBFA(treee) << endl;
     return 0;
 }
 

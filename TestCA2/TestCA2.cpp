@@ -15,7 +15,7 @@ namespace TestCA2
 	{
 	public:
 		
-		TEST_METHOD(IsItTrue)
+		TEST_METHOD(validateTest)
 		{
 			ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
 			string test1 = xmlToString(fileStream);
@@ -24,7 +24,36 @@ namespace TestCA2
 
 
 
-		TEST_METHOD(TestMethod2)
+		TEST_METHOD(buildTreeTest) 
+		{// it is unable to read the file and i dont know why
+			// but it should work normaly 
+			string fileName = "../x64/Debug/File.xml";
+			Tree<DataMemory*> tree(nullptr);
+			
+			createTree(tree, fileName);
+			TreeIterator<DataMemory*> iter(&tree);
+			iter.down();
+			Assert::AreEqual(12, tree.count());
+		}
+
+		TEST_METHOD(MyTreeTest) 
+		{
+			Tree<DataMemory*> tree = MyTree();
+			Assert::AreEqual(5, tree.count());
+		}
+
+		TEST_METHOD(EpartTest)
+		{
+			
+			Tree<DataMemory*> tree = MyTree();
+			TreeIterator<DataMemory*> iter(&tree);
+			E_displayTreeWithSize(iter, "");
+		}
+		TEST_METHOD(xmlToStringTest)
+		{
+			
+		}
+		TEST_METHOD(xmlToStringTest)
 		{
 			
 		}
