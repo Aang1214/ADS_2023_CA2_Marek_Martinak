@@ -4,6 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
+#include <queue>
 #include "DList.h" 
 #include "Tree.h" 
 #include "TreeIterator.h" 
@@ -125,7 +126,7 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
     string xml = xmlToString(fileStream);
     TreeIterator<DataMemory*> iter(&tree);
     DataMemory* D = new DataMemory(dir);
-    string x = "";
+    string tag = "";
     string y = "";
     int p;
     int i = 0;
@@ -136,67 +137,73 @@ void createTree(Tree<DataMemory*>& tree, string fileName) {
     {    
         while (i < xml.length())
         { // it goes through the whole string
-            x += xml[i];
-            
-        
-            if (x == "<name>")
-                { 
-                t = i + 1;
-                while (xml[t] != '<')
-                {
-                    y += xml[t];
-                    t++;
+            if (xml[i] == '<') { 
+                    string tag = "";
+                    i++;
+                    while (xml[i] != '>') {
+                        tag += xml[i];
+                        i++;
+                    }
+
+                    if (tag == "name")
+                    {
+                        t = i + 1;
+                        while (xml[t] != '<')
+                        {
+                            y += xml[t];
+                            t++;
+
+                        }
+                        D->name = y;
+                        i = t;
+                        y = "";
+                    }
+                    else if (tag == "length") {
+                        t = i + 1;
+                        while (xml[t] != '<')
+                        {
+                            y += xml[t];
+                            t++;
+                        }
+                        D->length = y;
+                        i = t;
+                        y = "";
+                    }
+                    else if (tag == "type") {
+                        t = i + 1;
+                        while (xml[t] != '<')
+                        {
+                            y += xml[t];
+                            t++;
+                        }
+                        D->type = y;
+                        i = t;
+                        y = "";
+                    }
+                    else if (tag == "dir") {
+                        D = new DataMemory(dir);
+
+                        //iter.item() = D; if first(root)
+                        iter.appendChild(D); //else
+                        iter.childEnd();
+                        iter.down();
+                        y = "";
+                    }
+                    else if (tag == "/dir") {
+                        //if first dont do this & firts = false
+                        iter.up();
+                        y = "";
+                    }
+                    else if (tag == "file") {
+                        D = new DataMemory(file);
+                        iter.appendChild(D);
+                        iter.childEnd();
+                        y = "";
+                    }
+
                     
-                }
-                D->name = y;
-                i = t; 
-                x = "";
-				}
-            else if (x == "<length>") {
-                t = i + 1;
-                while (xml[t] != '<')
-                {
-                    y += xml[t];
-                    t++;
-                }
-                D->length = y;
-                i = t;
-                x = "";
             }
-            else if (x == "<type>") {
-                t = i + 1;
-                while (xml[t] != '<')
-                {
-					y += xml[t];
-					t++;
-				}
-				D->type = y;
-                i = t;
-                x = "";
-            }
-            else if (x == "<dir>") {
-                D = new DataMemory(dir);
-                //iter.item() = D; if first(root)
-                iter.appendChild(D); //else
-                iter.childEnd();
-                iter.down();
-                x = "";
-			}
-
-
-            else if (x == "</dir>") {
-                //if first dont do this & firts = false
-                iter.up();
-                x = "";
-            }
-            else if (x == "<file>") {
-                D = new DataMemory(file);
-                iter.appendChild(D);
-                iter.childEnd();
-                x = "";
-			}
-            i++;
-						
+            i++;		
          }
 
         iter.root();
@@ -237,6 +244,7 @@ void displayTree(TreeIterator<DataMemory*> iter, string indent)
         iter.childForth();
     }
 }
+
 
 
 int main()
@@ -303,7 +311,7 @@ int main()
     ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
     string xml = xmlToString(fileStream);
     createTree(tree, fileName);
-    TreeIterator<DataMemory*> iter(&tree);
+    TreeIterator<DataMemory*> iter = TreeIterator<DataMemory*>(&tree);
     displayTree(iter, "");
 
     return 0;
