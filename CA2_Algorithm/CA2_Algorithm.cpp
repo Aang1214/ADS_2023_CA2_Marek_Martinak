@@ -21,7 +21,7 @@ bool validateXML(string& xml) {
     string nextTag = "dir";
     string prevTag = "";
     int i = 0;
-    while ( i < xml.length()) { // it goes through the whole string
+        while ( i < xml.length()) { // it goes through the whole string
         if (xml[i] == '<') { // if it finds a tag
 
             if (xml[i + 1] == '/') { // if it is a closing tag
@@ -344,6 +344,8 @@ void printBFS(Tree<DataMemory*>* tree)
 
 }
 
+
+
 Tree<DataMemory*> MyTree()
 {
     DataMemory* test = new DataMemory("ADS_Single_LinkedList_Exercises","", "", dir);
@@ -432,10 +434,10 @@ int main()
     Tree<DataMemory*> treee = MyTree();
     cout << endl;
     cout << endl;
-    E_displayTreeWithSize(iter, "");
-    cout << endl;
-    cout << "Number of files: " << A_countItems(treee) << endl;
-    cout << endl;
+    //E_displayTreeWithSize(iter, "");
+   // cout << endl;
+   // cout << "Number of files: " << A_countItems(treee) << endl;
+    //cout << endl;
     //cout << "Memory used: " << B_MemoryBFA(treee) << endl;
     return 0;
 }

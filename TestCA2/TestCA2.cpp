@@ -15,13 +15,12 @@ namespace TestCA2
 	{
 	public:
 		
-		TEST_METHOD(validateTest)
+		TEST_METHOD(validateTest1)
 		{
 			ifstream* fileStream = new ifstream("../x64/Debug/File.xml");
 			string test1 = xmlToString(fileStream);
 			Assert::AreEqual(true, validateXML(test1));
 		}
-
 
 
 		TEST_METHOD(buildTreeTest) 
@@ -35,8 +34,12 @@ namespace TestCA2
 			iter.down();
 			Assert::AreEqual(12, tree.count());
 		}
-
-		TEST_METHOD(MyTreeTest) 
+		TEST_METHOD(MyTreeTest2)
+		{
+			Tree<DataMemory*> tree = MyTree();
+			Assert::AreNotEqual(4, tree.count());
+		}
+		TEST_METHOD(MyTreeTest1) 
 		{
 			Tree<DataMemory*> tree = MyTree();
 			Assert::AreEqual(5, tree.count());
@@ -53,9 +56,6 @@ namespace TestCA2
 		{
 			
 		}
-		TEST_METHOD(xmlToStringTest)
-		{
-			
-		}
+		
 	};
 }
